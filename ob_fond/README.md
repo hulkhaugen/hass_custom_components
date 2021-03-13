@@ -1,6 +1,6 @@
 # Oslo Børs fond sensor
 
-The `ob_fond` sensor platform uses [Oslo Børs](https://www.oslobors.no/) to monitor funds.
+The `ob_fond` sensor platform uses [Oslo Børs](https://www.oslobors.no/) API to monitor funds.
 
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `ob_fond` and copy the files from this repository to that folder: `config/custom_components/ob_fond`.
