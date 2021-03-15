@@ -4,5 +4,5 @@
     "documentation": "https://github.com/hulkhaugen/hass_custom_components/tree/main/ob_fond",
     "codeowners": ["@hulkhaugen"],
     "requirements": [],
-    "version": "1.0"
+    "version": "1.1"
   }
