@@ -1,7 +1,7 @@
 {
     "domain": "lt_morningstar",
     "name": "Morningstar",
-    "documentation": "https://github.com/hulkhaugen",
+    "documentation": "https://github.com/hulkhaugen/hass_custom_components/tree/main/lt_morningstar",
     "codeowners": ["@hulkhaugen"],
     "requirements": ["beautifulsoup4==4.9.3"],
     "version": "1.0"
