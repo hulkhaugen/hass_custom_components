@@ -20,7 +20,7 @@ sensor:
     scan_interval: 00:15
 ```
 
-### funds`map, required`
+### funds `map, required`
 List of funds you want to monitor
 
 ### fund `string, required`
