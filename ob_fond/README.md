@@ -120,7 +120,9 @@ ips_dnb_norge_indeks_a:
   - service: notify.html5_pixel_4a
     data:
       title: Fondskontoer
-      message: "Aksjesparekonto: {{'{:,.2f}'.format(states('sensor.fond_ask')|float)|replace(',',' ')|replace('.',',')}} kr
+      message: "Aksjesparekonto: {{'{:,.2f}'.format(states('sensor.aksjesparekonto')|float)|replace(',',' ')|replace('.',',')}} kr
+
+        IPS-konto: {{'{:,.2f}'.format(states('sensor.individuell_pensjonssparing')|float)|replace(',',' ')|replace('.',',')}} kr
 
         DNB Global Indeks: {{state_attr('sensor.dnb_global_indeks_a', 'Intradag')}}
         
