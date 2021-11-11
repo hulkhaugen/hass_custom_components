@@ -90,7 +90,7 @@ ips_dnb_norge_indeks_a:
     unit_of_measurement: "kr"
     state: "{{('{0:.2f}'.format(
       ((states('input_text.ask_dnb_global_indeks_a')|float) * (state_attr('sensor.dnb_global_indeks_a', 'Full pris')|float)) +
-      ((states('input_text.ask_dnb_teknologi_n')|float) * (state_attr('sensor.dnb_teknologi_n', 'Full pris')|float)) +
+      ((states('input_text.ask_dnb_teknologi_n')|float) * (state_attr('sensor.dnb_teknologi_n', 'Full pris')|float))
       ))}}"
     attributes:
       DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', 'Intradag') }}"
@@ -101,7 +101,7 @@ ips_dnb_norge_indeks_a:
     unit_of_measurement: "kr"
     state: "{{('{0:.2f}'.format(
       ((states('input_text.ips_dnb_global_indeks_a')|float) * (state_attr('sensor.dnb_global_indeks_a', 'Full pris')|float)) +
-      ((states('input_text.ips_dnb_norge_indeks_a')|float) * (state_attr('sensor.dnb_norge_indeks_a', 'Full pris')|float)) +
+      ((states('input_text.ips_dnb_norge_indeks_a')|float) * (state_attr('sensor.dnb_norge_indeks_a', 'Full pris')|float))
       ))}}"
     attributes:
       DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', 'Intradag') }}"
