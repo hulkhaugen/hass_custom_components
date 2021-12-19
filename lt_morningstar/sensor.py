@@ -80,8 +80,8 @@ class MorningstarSensor(Entity):
         return self._state
 
     @property
-    def device_state_attributes(self):
-        """Return the device state attributes."""
+    def extra_state_attributes(self):
+        """Return the extra state attributes of the device."""
         return self._attrs
 
     @property
@@ -92,7 +92,7 @@ class MorningstarSensor(Entity):
     async def async_update(self):
         """Get the latest data from the source and updates the state."""
         try:
-            with async_timeout.timeout(10, loop=self.hass.loop):
+            with async_timeout.timeout(10):
                 response = await self._session.get(self._resource)
             _LOGGER.debug("Response from Morningstar: %s", response.status)
             html = await response.text()
@@ -129,10 +129,10 @@ class MorningstarSensor(Entity):
         self._name = title
         self._attrs.update(attributes)
         if iconvalue > 0:
-            self._icon = "mdi:arrow-top-right-thick"
+            self._icon = "mdi:trending-up"
         elif iconvalue < 0:
-            self._icon = "mdi:arrow-bottom-right-thick"
+            self._icon = "mdi:trending-down"
         elif iconvalue == 0:
-            self._icon = "mdi:arrow-right-thick"
+            self._icon = "mdi:trending-neutral"
         else:
             self._icon = "mdi:alert-circle"
