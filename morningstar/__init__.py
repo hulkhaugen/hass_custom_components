@@ -1,0 +1,1 @@
+"""lt morningstar sensor."""
