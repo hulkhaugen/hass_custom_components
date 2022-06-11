@@ -1,3 +1,6 @@
+# NOTE:
+This intagration has been depricated as oslobors.no has been replaced by [Euronext](https://live.euronext.com/nb). Please use the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) integration instead.
+
 # Oslo Børs fond sensor
 
 The `ob_fond` sensor platform uses [Oslo Børs](https://www.oslobors.no/) API to monitor funds.
