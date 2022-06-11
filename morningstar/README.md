@@ -87,23 +87,23 @@ ips_dnb_norge_indeks_a:
     unique_id: "fond_ask"
     unit_of_measurement: "kr"
     state: "{{('{0:.2f}'.format(
-      ((states('input_text.ask_dnb_global_indeks_a')|float) * (state_attr('sensor.dnb_global_indeks_a', 'Full pris')|float)) +
-      ((states('input_text.ask_dnb_teknologi_a')|float) * (state_attr('sensor.dnb_teknologi_a', 'Full pris')|float))
+      (states('input_text.ask_dnb_global_indeks_a') * states('sensor.dnb_global_indeks_a')) +
+      (states('input_text.ask_dnb_teknologi_a') * states('sensor.dnb_teknologi_a'))
       ))}}"
     attributes:
-      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', 'Intradag') }}"
-      DNB Teknologi N: "{{ state_attr('sensor.dnb_teknologi_a', 'Intradag') }}"
+      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }}"
+      DNB Teknologi N: "{{ state_attr('sensor.dnb_teknologi_a', '1 dag') }}"
 
   - name: "Individuell pensjonssparing"
     unique_id: "fond_ips"
     unit_of_measurement: "kr"
     state: "{{('{0:.2f}'.format(
-      ((states('input_text.ips_dnb_global_indeks_a')|float) * (state_attr('sensor.dnb_global_indeks_a', 'Full pris')|float)) +
-      ((states('input_text.ips_dnb_norge_indeks_a')|float) * (state_attr('sensor.dnb_norge_indeks_a', 'Full pris')|float))
+      (states('input_text.ips_dnb_global_indeks_a') * states('sensor.dnb_global_indeks_a')) +
+      (states('input_text.ips_dnb_norge_indeks_a') * states('sensor.dnb_norge_indeks_a'))
       ))}}"
     attributes:
-      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', 'Intradag') }}"
-      DNB Norge Indeks A: "{{ state_attr('sensor.dnb_norge_indeks_a', 'Intradag') }}"
+      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }}"
+      DNB Norge Indeks A: "{{ state_attr('sensor.dnb_norge_indeks_a', '1 dag') }}"
 ```
 ```yaml
 # Example automations.yaml
@@ -118,15 +118,15 @@ ips_dnb_norge_indeks_a:
   - service: notify.html5_pixel_4a
     data:
       title: Fondskontoer
-      message: "Aksjesparekonto: {{'{:,.2f}'.format(states('sensor.aksjesparekonto')|float)|replace(',',' ')|replace('.',',')}} kr
+      message: "Aksjesparekonto: {{'{:,.2f}'.format(states('sensor.aksjesparekonto'))}} kr
 
-        IPS-konto: {{'{:,.2f}'.format(states('sensor.individuell_pensjonssparing')|float)|replace(',',' ')|replace('.',',')}} kr
+        IPS-konto: {{'{:,.2f}'.format(states('sensor.individuell_pensjonssparing'))}} kr
 
-        DNB Global Indeks: {{state_attr('sensor.dnb_global_indeks_a', 'Intradag')}}
+        DNB Global Indeks: {{state_attr('sensor.dnb_global_indeks_a', '1 dag')}}
         
-        DNB Norge Indeks: {{state_attr('sensor.dnb_norge_indeks_a', 'Intradag')}}
+        DNB Norge Indeks: {{state_attr('sensor.dnb_norge_indeks_a', '1 dag')}}
         
-        DNB Teknologi N: {{state_attr('sensor.dnb_teknologi_a', 'Intradag')}}"
+        DNB Teknologi N: {{state_attr('sensor.dnb_teknologi_a', '1 dag')}}"
       data:
         tag: ask-update
         url: https://www.morningstar.no/no/portfoliomanager/portfolio.aspx
