@@ -1,12 +1,12 @@
 # Morningstar fund sensor
 
-The `morningstar` sensor platform uses [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.
+The `morningstar` sensor platform uses the [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.
 
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `morningstar` and copy the files from this repository to that folder: `config/custom_components/morningstar`.
 
 ## Configuration
-To enable the `morningstar` platform, add content such as this example to your `configuration.yaml` file:
+To enable the `morningstar` platform, add content like this example to your `configuration.yaml` file:
 
 ```yaml
 # Example configuration.yaml entry
@@ -25,7 +25,7 @@ List of funds you want to monitor. The values are taken from the fund's page at 
 For example DNB Norge Indeks A has the url https://www.morningstar.no/no/funds/snapshot/snapshot.aspx?id=F00000JORR. In that url, use the `F00000JORR` part.
 
 ### currency `string, optional, default=kr`
-Customize the unit of measurement for the, for instance "NOK" instead of the default "kr"
+Customize the unit of measurement, for instance "NOK" instead of the default "kr"
 
 ### scan_interval `time, optional, default=00:30`
 Set how often you want the data to refresh. Default is 30 minutes.
@@ -36,8 +36,7 @@ Set how often you want the data to refresh. Default is 30 minutes.
 ## Example: Complex
 ![More info dialogue box](morningstar_example_complex.png)
 
-Setting up one or more accounts, customizing icon color (requires [card-mod](https://github.com/thomasloven/lovelace-card-mod)) based on performance, custom secondary info (requires [secondaryinfo-entity-row](https://github.com/custom-cards/secondaryinfo-entity-row)) and automatic notifications on account updates. Both required mods are best installed using [HACS](https://hacs.xyz/).
-For the sake of keeping the condiguration file neat, it's best to split it up using extrenal yaml files, like so:
+Setting up one or more accounts, customizing icon color (requires [card-mod](https://github.com/thomasloven/lovelace-card-mod)) based on performance, custom secondary info (requires [secondaryinfo-entity-row](https://github.com/custom-cards/secondaryinfo-entity-row) and [card-tools](https://github.com/thomasloven/lovelace-card-tools)) and automatic notifications on account updates. These mods are best installed using [HACS](https://hacs.xyz/).
 
 ```yaml
 # Example configuration.yaml
