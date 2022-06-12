@@ -41,95 +41,54 @@ For the sake of keeping the condiguration file neat, it's best to split it up us
 
 ```yaml
 # Example configuration.yaml
-automation: !include automations.yaml
-input_text: !include input_text.yaml
-sensor: !include sensors.yaml
-template: !include templates.yaml
-```
-```yaml
-# Example sensors.yaml
-- platform: morningstar
-  scan_interval: 00:10  # Default 00:30
-  funds:
-    - F00000JORS  # DNB Global Indeks A
-    - F00000JORR  # DNB Norge Indeks A
-    - F0GBR04NGU  # DNB Teknologi A
-```
-```yaml
-# Example input_text.yaml
-# =====================
-# Aksjesparekonto (ASK)
-# =====================
+sensor:
+  - platform: morningstar
+    funds:
+      - F00000JORS  # DNB Global Indeks A
+      - F0GBR04NGU  # DNB Teknologi A
+    scan_interval: 00:15
 
-ask_dnb_global_indeks_a:
-  name: "ASK DNB Global Indeks A"
-  initial: 123.4567
+input_text:
+  ask_dnb_global_indeks_a:
+    name: "ASK DNB Global Indeks A"
+    initial: 123.4567
+  ask_dnb_teknologi_a:
+    name: "ASK DNB Teknologi A"
+    initial: 250.0000
 
-ask_dnb_teknologi_a:
-  name: "ASK DNB Teknologi A"
-  initial: 250.0000
+template:
+  - sensor:
+    - name: "Aksjesparekonto"
+      unique_id: "ask_account"
+      unit_of_measurement: "kr"
+      state: "{{('{0:.2f}'.format(
+        (states('input_text.ask_dnb_global_indeks_a')|float * states('sensor.dnb_global_indeks_a')|float) +
+        (states('input_text.ask_dnb_teknologi_a')|float * states('sensor.dnb_teknologi_a')|float)
+        ))}}"
+      attributes:
+        DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }}"
+        DNB Teknologi A: "{{ state_attr('sensor.dnb_teknologi_a', '1 dag') }}"
 
-# ==================================
-# Individuelle pensjonssparing (IPS)
-# ==================================
-
-ips_dnb_global_indeks_a:
-  name: "IPS DNB Global Indeks A"
-  initial: 420.6900
-
-ips_dnb_norge_indeks_a:
-  name: "IPS DNB Norge Indeks A"
-  initial: 69.0741
-```
-```yaml
-# Example templates.yaml
-  - name: "Aksjesparekonto"
-    unique_id: "fond_ask"
-    unit_of_measurement: "kr"
-    state: "{{('{0:.2f}'.format(
-      (states('input_text.ask_dnb_global_indeks_a') * states('sensor.dnb_global_indeks_a')) +
-      (states('input_text.ask_dnb_teknologi_a') * states('sensor.dnb_teknologi_a'))
-      ))}}"
-    attributes:
-      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }}"
-      DNB Teknologi N: "{{ state_attr('sensor.dnb_teknologi_a', '1 dag') }}"
-
-  - name: "Individuell pensjonssparing"
-    unique_id: "fond_ips"
-    unit_of_measurement: "kr"
-    state: "{{('{0:.2f}'.format(
-      (states('input_text.ips_dnb_global_indeks_a') * states('sensor.dnb_global_indeks_a')) +
-      (states('input_text.ips_dnb_norge_indeks_a') * states('sensor.dnb_norge_indeks_a'))
-      ))}}"
-    attributes:
-      DNB Global Indeks A: "{{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }}"
-      DNB Norge Indeks A: "{{ state_attr('sensor.dnb_norge_indeks_a', '1 dag') }}"
-```
-```yaml
-# Example automations.yaml
-- id: fondskonto
-  alias: "Fondskontoer - oppdatering"
-  trigger:
-  - platform: state
-    entity_id: sensor.fond_ask
-  mode: restart
-  action:
-  - delay: "00:15:00"
-  - service: notify.html5_pixel_4a
-    data:
-      title: Fondskontoer
-      message: "Aksjesparekonto: {{'{:,.2f}'.format(states('sensor.aksjesparekonto'))}} kr
-
-        IPS-konto: {{'{:,.2f}'.format(states('sensor.individuell_pensjonssparing'))}} kr
-
-        DNB Global Indeks: {{state_attr('sensor.dnb_global_indeks_a', '1 dag')}}
-        
-        DNB Norge Indeks: {{state_attr('sensor.dnb_norge_indeks_a', '1 dag')}}
-        
-        DNB Teknologi N: {{state_attr('sensor.dnb_teknologi_a', '1 dag')}}"
+automation:
+  - id: fondskonto
+    alias: "Fondskontoer - oppdatering"
+    trigger:
+    - platform: state
+      entity_id: sensor.fond_ask
+    mode: restart
+    action:
+    - delay: "00:15:00"
+    - service: notify.html5_pixel_4a
       data:
-        tag: ask-update
-        url: https://www.morningstar.no/no/portfoliomanager/portfolio.aspx
+        title: Fondskontoer
+        message: "Aksjesparekonto: {{ states('sensor.aksjesparekonto') }} kr
+
+          DNB Global Indeks: {{ state_attr('sensor.dnb_global_indeks_a', '1 dag') }} %
+
+          DNB Teknologi A: {{ state_attr('sensor.dnb_teknologi_a', '1 dag') }} %"
+        data:
+          tag: morningstar-update
+          url: https://www.morningstar.no/no/portfoliomanager/portfolio.aspx
 ```
 ```yaml
 # Example lovlace card configuration
@@ -138,27 +97,9 @@ type: entities
 entities:
   - entity: sensor.aksjesparekonto
     secondary_info: last-changed
-  - entity: sensor.individuell_pensjonssparing
-    secondary_info: last-changed
   - entity: sensor.dnb_global_indeks_a
     type: custom:secondaryinfo-entity-row
-    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.Intradag ]]'
-    card_mod:
-      style: |
-        :host {
-          --paper-item-icon-color:
-            {% if state_attr(config.entity,'icon') == "mdi:trending-up" %}
-              var(--label-badge-green)
-            {% elif state_attr(config.entity,'icon') == "mdi:trending-down" %}
-              var(--label-badge-red)
-            {% else %}
-              var(--paper-item-icon-color)
-            {% endif %}
-            ;
-        }
-  - entity: sensor.dnb_norge_indeks_a
-    type: custom:secondaryinfo-entity-row
-    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.Intradag ]]'
+    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]] %'
     card_mod:
       style: |
         :host {
@@ -174,7 +115,7 @@ entities:
         }
   - entity: sensor.dnb_teknologi_a
     type: custom:secondaryinfo-entity-row
-    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.Intradag ]]'
+    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]] %'
     card_mod:
       style: |
         :host {
