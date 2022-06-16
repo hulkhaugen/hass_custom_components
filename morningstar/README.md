@@ -2,6 +2,8 @@
 
 The `morningstar` sensor platform uses the [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.
 
+![More info dialogue box](morningstar_sensor.png)
+
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `morningstar` and copy the files from this repository to that folder: `config/custom_components/morningstar`.
 
@@ -30,11 +32,8 @@ Customize the unit of measurement, for instance "NOK" instead of the default "kr
 ### scan_interval `time, optional, default=00:30`
 Set how often you want the data to refresh. Default is 30 minutes.
 
-## Example: Simple
-![More info dialogue box](morningstar_example_more_info.png)
-
 ## Example: Complex
-![More info dialogue box](morningstar_example_complex.png)
+![More info dialogue box](card.png)
 
 Setting up one or more accounts, customizing icon color (requires [card-mod](https://github.com/thomasloven/lovelace-card-mod)) based on performance, custom secondary info (requires [secondaryinfo-entity-row](https://github.com/custom-cards/secondaryinfo-entity-row) and [card-tools](https://github.com/thomasloven/lovelace-card-tools)) and automatic notifications on account updates. These mods are best installed using [HACS](https://hacs.xyz/).
 
@@ -98,7 +97,7 @@ entities:
     secondary_info: last-changed
   - entity: sensor.dnb_global_indeks_a
     type: custom:secondaryinfo-entity-row
-    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]] %'
+    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]]'
     card_mod:
       style: |
         :host {
@@ -114,7 +113,7 @@ entities:
         }
   - entity: sensor.dnb_teknologi_a
     type: custom:secondaryinfo-entity-row
-    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]] %'
+    secondary_info: '[[ {entity}.attributes.Dato ]], [[ {entity}.attributes.1 dag ]]'
     card_mod:
       style: |
         :host {
