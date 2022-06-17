@@ -1,7 +1,7 @@
 {
     "name": "Morningstar (LT)",
     "domain": "lt_morningstar",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "codeowners": ["@hulkhaugen"],
     "documentation": "https://github.com/hulkhaugen/hass_custom_components/tree/main/lt_morningstar",
     "issue_tracker": "https://github.com/hulkhaugen/hass_custom_components/issues",
