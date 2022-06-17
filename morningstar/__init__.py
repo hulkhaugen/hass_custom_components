@@ -1,1 +1,1 @@
-"""lt morningstar sensor."""
+"""morningstar sensor."""
