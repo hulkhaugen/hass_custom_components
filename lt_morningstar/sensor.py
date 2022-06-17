@@ -1,4 +1,4 @@
-"""Data from Morningstar"""
+"""Data from Morningstar (LT)"""
 import asyncio
 from datetime import timedelta
 import logging
@@ -9,55 +9,87 @@ from bs4 import BeautifulSoup
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    ATTR_ATTRIBUTION,
-    CONF_CURRENCY,
-    CONF_RESOURCE,
-    CONF_SCAN_INTERVAL
-)
+from homeassistant.const import (ATTR_ATTRIBUTION, CONF_CURRENCY, CONF_SCAN_INTERVAL)
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
 
-ATTRIBUTION = "Data provided by Morningstar"
-
-DEFAULT_CURRENCY = "kr"
-DEFAULT_SCAN_INTERVAL = timedelta(minutes=20)
+ATTRIBUTION = 'Data provided by Morningstar'
+CONF_FUNDS = 'funds'
+DEFAULT_CURRENCY = 'kr'
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=30)
+DOMAIN = 'lt_morningstar'
+URL = 'https://lt.morningstar.com/cahq7idbwv/snapshot/snapshot.aspx?id={}'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_RESOURCE): cv.url,
+        vol.Required(CONF_FUNDS): vol.All(cv.ensure_list, [cv.string]),
         vol.Optional(CONF_CURRENCY, default=DEFAULT_CURRENCY): cv.string,
         vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.time_period
     }
 )
 
 
+async def async_scape(sess, fund):
+    try:
+        with async_timeout.timeout(10):
+            response = await sess.get(URL.format(fund))
+        _LOGGER.info('Response from Morningstar (LT): %s', response.status)
+        html = await response.text()
+        soup = BeautifulSoup(html, 'html.parser')
+    except (asyncio.TimeoutError, aiohttp.ClientError):
+        _LOGGER.info('Unable to scrape data from Morningstar (LT) for %s', fund)
+        return
+
+    try:
+        name = soup.h1.text
+        stat = soup.select('#KeyStatsLatestNav td')[0].text.replace(',', '.')[4:]
+        pcts = soup.select('#TrailingReturns > table > tbody > tr > td.colSecurity')
+        span = soup.select('#TrailingReturns > table > tbody > tr > th')
+        oday = float(pcts[1].text.replace(',', '.'))
+        icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
+        attr = {
+            ATTR_ATTRIBUTION: ATTRIBUTION,
+            'Dato': soup.select('#KeyStatsLatestNav > th > span')[0].text
+        }
+        hist = {span[i].text: pcts[i].text for i in range(len(pcts))}
+        attr.update(hist)
+        attr['URL'] = URL.format(fund)
+        data = {'name': name, 'uniq': fund, 'stat': stat, 'icon': icon, 'attr': attr}
+        _LOGGER.info('%s Successfully scraped from Morningstar (LT)', name)
+        return data
+    except (IndexError, AttributeError):
+        _LOGGER.warning('Unable to extract data from Morningstar for %s', fund)
+        return
+
+
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the Morningstar sensor."""
-    _LOGGER.info("Setting up sensor")
-    session = async_get_clientsession(hass)
-    resource = config.get(CONF_RESOURCE)
-    unit_of_measurement = config.get(CONF_CURRENCY)
+    """Set up the sensor."""
+    _LOGGER.info('Setting up sensors')
+    sess = async_get_clientsession(hass)
+    funds = config.get(CONF_FUNDS, [])
+    unit = config.get(CONF_CURRENCY)
+    for fund in funds:
+        async_add_entities([MorningstarLtSensor(sess, fund, unit)], True)
+        _LOGGER.info('Setup of %s complete', fund[-10:])
 
-    async_add_entities([MorningstarSensor(session, resource, unit_of_measurement)], True)
-    _LOGGER.info("Setup complete")
 
+class MorningstarLtSensor(Entity):
+    """Representation of the sensor."""
 
-class MorningstarSensor(Entity):
-    """Representation of Morningstar sensor."""
-
-    def __init__(self, session, resource, unit_of_measurement):
-        """Initialize Morningstar sensor."""
-        self._resource = resource
-        self._session = session
-        self._state = None
-        self._name = ""
-        self._icon = "mdi:timer-sand-empty"
-        self._unit_of_measurement = unit_of_measurement
-        self._attrs = {ATTR_ATTRIBUTION: ATTRIBUTION}
+    def __init__(self, sess, fund, unit):
+        """Initialize the sensor."""
+        self._sess = sess
+        self._fund = fund
+        self._unit = unit
+        self._data = None
+        self._name = None
+        self._uniq = None
+        self._stat = None
+        self._icon = None
+        self._attr = None
 
     @property
     def name(self):
@@ -65,74 +97,36 @@ class MorningstarSensor(Entity):
         return self._name
 
     @property
-    def resource(self):
-        """Return the url of the sensor."""
-        return self._resource
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        return self._unit_of_measurement
+    def unique_id(self):
+        """Return the unique ID."""
+        return self._uniq
 
     @property
     def state(self):
-        """Return the state of the device."""
-        return self._state
+        """Return the state of the sensor."""
+        return self._stat
 
     @property
-    def extra_state_attributes(self):
-        """Return the extra state attributes of the device."""
-        return self._attrs
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._unit
 
     @property
     def icon(self):
-        """Return icon to use based on performance."""
+        """Return icon of the sensor."""
         return self._icon
 
+    @property
+    def extra_state_attributes(self):
+        """Return the extra state attributes of the sensor."""
+        return self._attr
+
     async def async_update(self):
-        """Get the latest data from the source and updates the state."""
-        try:
-            with async_timeout.timeout(10):
-                response = await self._session.get(self._resource)
-            _LOGGER.debug("Response from Morningstar: %s", response.status)
-            html = await response.text()
-            #_LOGGER.debug(html)
-        except (asyncio.TimeoutError, aiohttp.ClientError):
-            _LOGGER.error("Unable to load data from Morningstar")
-            return
-
-        soup = BeautifulSoup(html, "html.parser")
-
-        try:
-            self._attrs["Dato"] = soup.select("#KeyStatsLatestNav > th > span")[0].text
-            attributes = {
-                "Måned": soup.select("td.number.colSecurity")[1].text,
-                "3 måneder": soup.select("td.number.colSecurity")[2].text,
-                "6 måneder": soup.select("td.number.colSecurity")[3].text,
-                "Hittil i år": soup.select("td.number.colSecurity")[0].text,
-                "1 år": soup.select("td.number.colSecurity")[4].text,
-                "3 år": soup.select("td.number.colSecurity")[5].text,
-                "5 år": soup.select("td.number.colSecurity")[6].text,
-                "10 år": soup.select("td.number.colSecurity")[7].text
-            }
-            attributes = {k: v.replace(",", ".") for k, v in attributes.items()}
-            attributes = {k: v + " %" for k, v in attributes.items()}
-            title = soup.h1.string
-            value = soup.select("#KeyStatsLatestNav td")[0].text.replace("NOK ", "").replace(",", ".")
-            iconvalue = float(soup.select("td.number.colSecurity")[1].text.replace(",", "."))
-            _LOGGER.info("Successfully scraped '%s' data from Morningstar", title)
-        except IndexError:
-            _LOGGER.error("Unable to extract data from Morningstar")
-            return
-
-        self._state = value
-        self._name = title
-        self._attrs.update(attributes)
-        if iconvalue > 0:
-            self._icon = "mdi:trending-up"
-        elif iconvalue < 0:
-            self._icon = "mdi:trending-down"
-        elif iconvalue == 0:
-            self._icon = "mdi:trending-neutral"
-        else:
-            self._icon = "mdi:alert-circle"
+        """Updates the sensor data."""
+        self._data = await async_scape(self._sess, self._fund)
+        self._name = self._data['name']
+        self._uniq = self._data['uniq']
+        self._stat = self._data['stat']
+        self._icon = self._data['icon']
+        self._attr = self._data['attr']
+        _LOGGER.info('Update of %s complete', self._name)
