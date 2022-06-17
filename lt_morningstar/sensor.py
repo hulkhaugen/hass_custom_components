@@ -54,7 +54,7 @@ async def async_scape(sess, fund):
             ATTR_ATTRIBUTION: ATTRIBUTION,
             'Dato': soup.select('#KeyStatsLatestNav > th > span')[0].text
         }
-        hist = {span[i].text: pcts[i].text for i in range(len(pcts))}
+        hist = {span[i].text: pcts[i].text + ' %' for i in range(len(pcts))}
         attr.update(hist)
         attr['URL'] = URL.format(fund)
         data = {'name': name, 'uniq': fund, 'stat': stat, 'icon': icon, 'attr': attr}
