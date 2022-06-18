@@ -2,7 +2,7 @@
 
 The `morningstar` sensor platform uses the [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.
 
-![More info dialogue box](morningstar_sensor.png)
+<img src="https://github.com/hulkhaugen/hass_custom_components/raw/main/morningstar/morningstar_sensor.png" width="360" height="780">
 
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `morningstar` and copy the files from this repository to that folder: `config/custom_components/morningstar`.
@@ -33,7 +33,7 @@ Customize the unit of measurement, for instance "NOK" instead of the default "kr
 Set how often you want the data to refresh. Default is 30 minutes.
 
 ## Example: Complex
-![More info dialogue box](card.png)
+<img src="https://github.com/hulkhaugen/hass_custom_components/raw/main/morningstar/card.png" width="360" height="780">
 
 Setting up one or more accounts, customizing icon color (requires [card-mod](https://github.com/thomasloven/lovelace-card-mod)) based on performance, custom secondary info (requires [secondaryinfo-entity-row](https://github.com/custom-cards/secondaryinfo-entity-row) and [card-tools](https://github.com/thomasloven/lovelace-card-tools)) and automatic notifications on account updates. These mods are best installed using [HACS](https://hacs.xyz/).
 
