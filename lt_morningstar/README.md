@@ -1,6 +1,6 @@
 # Morningstar (LT) fund sensor
 
-This sensor, the Morningstar Integrated Web Tools sensor platform uses the [morningstar.lt](https://lt.morningstar.com/) website to scrape fund data. This specific version is for unique funds such as pension funds that are not available on the regular Morningstar website and are not searchable. You'll find the links for these types of funds with your bank, broker or similar. If you're looking for a Morningstar sensor for regular traded funds, check out the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) sensor.
+This sensor, the *Morningstar Integrated Web Tools* sensor platform uses the [lt.morningstar.com](https://lt.morningstar.com/) website to scrape fund data. This specific version is for unique funds such as pension funds that are not available on the regular Morningstar website and are not searchable. You'll find the links for these types of funds with your bank, broker or similar. If you're looking for a *Morningstar* sensor for regular traded funds, check out the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) sensor.
 
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `lt_morningstar` and copy the files from this repository to that folder: `config/custom_components/lt_morningstar`.
@@ -22,7 +22,7 @@ sensor:
 
 ### funds `list, required`
 List of funds you want to monitor. Get the link to your funds, and copy the part of the url that comes after `id=` or `SecurityToken=`, it will look something like `F00000N52F`
-For example DNB Pensjonsprofil 100 has the url https://lt.morningstar.com/1vonrmqpe9/snapshot/snapshot.aspx?SecurityToken=F00000N52G%5d2%5d1%5dFOALL%24%24ALL_3642&ClientFund=1&LanguageId=nb-NO&CurrencyId=NOK. In that url, use the `F00000N52G` part.
+For example *DNB Pensjonsprofil 100* has the url https://lt.morningstar.com/1vonrmqpe9/snapshot/snapshot.aspx?SecurityToken=F00000N52G%5d2%5d1%5dFOALL%24%24ALL_3642&ClientFund=1&LanguageId=nb-NO&CurrencyId=NOK. In that url, use the `F00000N52G` part.
 
 ### currency `string, optional, default=kr`
 Customize the unit of measurement, for instance "NOK" instead of the default "kr"
