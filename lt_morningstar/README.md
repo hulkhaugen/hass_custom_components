@@ -2,6 +2,8 @@
 
 This sensor, the *Morningstar Integrated Web Tools* sensor platform uses the [lt.morningstar.com](https://lt.morningstar.com/) website to scrape fund data. This specific version is for unique funds such as pension funds that are not available on the regular Morningstar website and are not searchable. You'll find the links for these types of funds with your bank, broker or similar. If you're looking for a *Morningstar* sensor for regular traded funds, check out the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) sensor.
 
+<img src="https://github.com/hulkhaugen/hass_custom_components/raw/main/lt_morningstar/lt_morningstar_sensor.jpg" width="360" height="780">
+
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `lt_morningstar` and copy the files from this repository to that folder: `config/custom_components/lt_morningstar`.
 
