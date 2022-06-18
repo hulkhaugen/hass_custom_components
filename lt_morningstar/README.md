@@ -22,7 +22,7 @@ sensor:
 
 ### funds `list, required`
 List of funds you want to monitor. Get the link to your funds, and copy the part of the url that comes after `id=` or `SecurityToken=`, it will look something like `F00000N52F`
-For example DNB Pensjonsprofil 100 has the url https://lt.morningstar.com/cahq7idbwv/snapshot/snapshot.aspx?id=F00000N52G. In that url, use the `F00000N52G` part.
+For example DNB Pensjonsprofil 100 has the url https://lt.morningstar.com/1vonrmqpe9/snapshot/snapshot.aspx?SecurityToken=F00000N52G%5d2%5d1%5dFOALL%24%24ALL_3642&ClientFund=1&LanguageId=nb-NO&CurrencyId=NOK. In that url, use the `F00000N52G` part.
 
 ### currency `string, optional, default=kr`
 Customize the unit of measurement, for instance "NOK" instead of the default "kr"
