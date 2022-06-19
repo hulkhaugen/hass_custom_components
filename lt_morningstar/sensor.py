@@ -124,9 +124,12 @@ class MorningstarLtSensor(Entity):
     async def async_update(self):
         """Updates the sensor data."""
         self._data = await async_scape(self._sess, self._fund)
-        self._name = self._data['name']
-        self._uniq = self._data['uniq']
-        self._stat = self._data['stat']
-        self._icon = self._data['icon']
-        self._attr = self._data['attr']
-        _LOGGER.info('Update of %s complete', self._name)
+        try:
+            self._name = self._data['name']
+            self._uniq = self._data['uniq']
+            self._stat = self._data['stat']
+            self._icon = self._data['icon']
+            self._attr = self._data['attr']
+            _LOGGER.info('Update of %s complete', self._name)
+        except TypeError:
+            _LOGGER.info('Update failed')
