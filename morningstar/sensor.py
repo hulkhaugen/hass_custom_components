@@ -47,7 +47,6 @@ async def async_scape(sess, fund):
         keys = soup.find('table', attrs={'class': 'overviewKeyStatsTable'})
         hist = soup.find('table', attrs={'class': 'overviewTrailingReturnsTable'})
         name = soup.h1.text
-        uniq = keys.select('tr:nth-of-type(5) > td.text')[0].text
         stat = float(keys.select('tr:nth-of-type(2) > td.text')[0].text[4:].replace(',', '.'))
         oday = float(keys.select('tr:nth-of-type(3) > td.text')[0].text.replace(',', '.').replace('%\n', ''))
         icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
@@ -60,7 +59,7 @@ async def async_scape(sess, fund):
         hist = {item[0]: item[1] + ' %' for item in hist if item[1] != '-'}
         attr.update(hist)
         attr['URL'] = URL.format(fund)
-        data = {'name': name, 'uniq': uniq, 'stat': stat, 'icon': icon, 'attr': attr}
+        data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
         _LOGGER.info('%s successfully scraped from Morningstar', name)
         return data
     except (IndexError, AttributeError):
@@ -89,7 +88,6 @@ class MorningstarSensor(Entity):
         self._unit = unit
         self._data = None
         self._name = None
-        self._uniq = None
         self._stat = None
         self._icon = None
         self._attr = None
@@ -102,7 +100,7 @@ class MorningstarSensor(Entity):
     @property
     def unique_id(self):
         """Return the unique ID."""
-        return self._uniq
+        return self._fund
 
     @property
     def state(self):
@@ -129,7 +127,6 @@ class MorningstarSensor(Entity):
         self._data = await async_scape(self._sess, self._fund)
         try:
             self._name = self._data['name']
-            self._uniq = self._data['uniq']
             self._stat = self._data['stat']
             self._icon = self._data['icon']
             self._attr = self._data['attr']
