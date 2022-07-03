@@ -57,7 +57,7 @@ async def async_scape(sess, fund):
         hist = {span[i].text: pcts[i].text + ' %' for i in range(len(pcts))}
         attr.update(hist)
         attr['URL'] = URL.format(fund)
-        data = {'name': name, 'uniq': fund, 'stat': stat, 'icon': icon, 'attr': attr}
+        data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
         _LOGGER.info('%s Successfully scraped from Morningstar (LT)', name)
         return data
     except (IndexError, AttributeError):
@@ -86,7 +86,6 @@ class MorningstarLtSensor(Entity):
         self._unit = unit
         self._data = None
         self._name = None
-        self._uniq = None
         self._stat = None
         self._icon = None
         self._attr = None
@@ -99,7 +98,7 @@ class MorningstarLtSensor(Entity):
     @property
     def unique_id(self):
         """Return the unique ID."""
-        return self._uniq
+        return self._fund
 
     @property
     def state(self):
@@ -126,7 +125,6 @@ class MorningstarLtSensor(Entity):
         self._data = await async_scape(self._sess, self._fund)
         try:
             self._name = self._data['name']
-            self._uniq = self._data['uniq']
             self._stat = self._data['stat']
             self._icon = self._data['icon']
             self._attr = self._data['attr']
