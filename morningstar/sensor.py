@@ -39,31 +39,30 @@ async def async_scape(sess, fund):
         _LOGGER.info('Response from Morningstar fund %s: %s', fund, response.status)
         html = await response.text()
         soup = BeautifulSoup(html, 'html.parser')
+        try:
+            keys = soup.find('table', attrs={'class': 'overviewKeyStatsTable'})
+            hist = soup.find('table', attrs={'class': 'overviewTrailingReturnsTable'})
+            name = soup.h1.text
+            stat = float(keys.select('tr:nth-of-type(2) > td.text')[0].text[4:].replace(',', '.'))
+            oday = float(keys.select('tr:nth-of-type(3) > td.text')[0].text.replace(',', '.').replace('%\n', ''))
+            icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
+            attr = {
+                ATTR_ATTRIBUTION: ATTRIBUTION,
+                'Dato': hist.find('td', attrs={'class': 'heading date'}).text,
+                '1 dag': str(oday).replace('.', ',') + ' %'
+            }
+            hist = [[td.text for td in tr.select('td')] for tr in hist.select('tr')][1:]
+            hist = {item[0]: item[1] + ' %' for item in hist if item[1] != '-'}
+            attr.update(hist)
+            attr['URL'] = URL.format(fund)
+            data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
+            _LOGGER.info('%s successfully scraped from Morningstar', name)
+            return data
+        except (IndexError, AttributeError):
+            _LOGGER.warning('Unable to extract data from Morningstar for %s', fund)
+            return
     except (asyncio.TimeoutError, aiohttp.ClientError):
         _LOGGER.info('Unable to scrape data from Morningstar for %s', fund)
-        return
-
-    try:
-        keys = soup.find('table', attrs={'class': 'overviewKeyStatsTable'})
-        hist = soup.find('table', attrs={'class': 'overviewTrailingReturnsTable'})
-        name = soup.h1.text
-        stat = float(keys.select('tr:nth-of-type(2) > td.text')[0].text[4:].replace(',', '.'))
-        oday = float(keys.select('tr:nth-of-type(3) > td.text')[0].text.replace(',', '.').replace('%\n', ''))
-        icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
-        attr = {
-            ATTR_ATTRIBUTION: ATTRIBUTION,
-            'Dato': hist.find('td', attrs={'class': 'heading date'}).text,
-            '1 dag': str(oday).replace('.', ',') + ' %'
-        }
-        hist = [[td.text for td in tr.select('td')] for tr in hist.select('tr')][1:]
-        hist = {item[0]: item[1] + ' %' for item in hist if item[1] != '-'}
-        attr.update(hist)
-        attr['URL'] = URL.format(fund)
-        data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
-        _LOGGER.info('%s successfully scraped from Morningstar', name)
-        return data
-    except (IndexError, AttributeError):
-        _LOGGER.warning('Unable to extract data from Morningstar for %s', fund)
         return
 
 
@@ -80,7 +79,6 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
 class MorningstarSensor(Entity):
     """Representation of the sensor."""
-
     def __init__(self, sess, fund, unit):
         """Initialize the sensor."""
         self._sess = sess
