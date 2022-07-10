@@ -39,29 +39,28 @@ async def async_scape(sess, fund):
         _LOGGER.info('Response from Morningstar (LT): %s', response.status)
         html = await response.text()
         soup = BeautifulSoup(html, 'html.parser')
+        try:
+            name = soup.h1.text
+            stat = soup.select('#KeyStatsLatestNav td')[0].text.replace(',', '.')[4:]
+            pcts = soup.select('#TrailingReturns > table > tbody > tr > td.colSecurity')
+            span = soup.select('#TrailingReturns > table > tbody > tr > th')
+            oday = float(pcts[1].text.replace(',', '.'))
+            icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
+            attr = {
+                ATTR_ATTRIBUTION: ATTRIBUTION,
+                'Dato': soup.select('#KeyStatsLatestNav > th > span')[0].text
+            }
+            hist = {span[i].text: pcts[i].text + ' %' for i in range(len(pcts))}
+            attr.update(hist)
+            attr['URL'] = URL.format(fund)
+            data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
+            _LOGGER.info('%s Successfully scraped from Morningstar (LT)', name)
+            return data
+        except (IndexError, AttributeError):
+            _LOGGER.warning('Unable to extract data from Morningstar for %s', fund)
+            return
     except (asyncio.TimeoutError, aiohttp.ClientError):
         _LOGGER.info('Unable to scrape data from Morningstar (LT) for %s', fund)
-        return
-
-    try:
-        name = soup.h1.text
-        stat = soup.select('#KeyStatsLatestNav td')[0].text.replace(',', '.')[4:]
-        pcts = soup.select('#TrailingReturns > table > tbody > tr > td.colSecurity')
-        span = soup.select('#TrailingReturns > table > tbody > tr > th')
-        oday = float(pcts[1].text.replace(',', '.'))
-        icon = 'mdi:trending-up' if oday > 0 else 'mdi:trending-down' if oday < 0 else 'mdi:trending-neutral'
-        attr = {
-            ATTR_ATTRIBUTION: ATTRIBUTION,
-            'Dato': soup.select('#KeyStatsLatestNav > th > span')[0].text
-        }
-        hist = {span[i].text: pcts[i].text + ' %' for i in range(len(pcts))}
-        attr.update(hist)
-        attr['URL'] = URL.format(fund)
-        data = {'name': name, 'stat': stat, 'icon': icon, 'attr': attr}
-        _LOGGER.info('%s Successfully scraped from Morningstar (LT)', name)
-        return data
-    except (IndexError, AttributeError):
-        _LOGGER.warning('Unable to extract data from Morningstar for %s', fund)
         return
 
 
