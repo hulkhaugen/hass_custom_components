@@ -1,3 +1,6 @@
+# NOTE:
+This intagration has been depricated as it has been integrated into the main Morningstar sensor. Please use the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) integration instead.
+
 # Morningstar (LT) fund sensor
 
 This sensor, the *Morningstar Integrated Web Tools* sensor platform uses the [lt.morningstar.com](https://lt.morningstar.com/) website to scrape fund data. This specific version is for unique funds such as pension funds that are not available on the regular Morningstar website and are not searchable. You'll find the links for these types of funds with your bank, broker or similar. If you're looking for a *Morningstar* sensor for regular traded funds, check out the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar) sensor.
