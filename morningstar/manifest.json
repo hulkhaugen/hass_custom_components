@@ -1,10 +1,10 @@
 {
     "name": "Morningstar",
     "domain": "morningstar",
-    "version": "1.0.4",
+    "version": "3.0.0",
     "codeowners": ["@hulkhaugen"],
     "documentation": "https://github.com/hulkhaugen/hass_custom_components/tree/main/morningstar",
     "issue_tracker": "https://github.com/hulkhaugen/hass_custom_components/issues",
     "iot_class": "cloud_push",
-    "requirements": ["beautifulsoup4==4.11.1"]
+    "requirements": ["beautifulsoup4==4.11.2"]
 }
