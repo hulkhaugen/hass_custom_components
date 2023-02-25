@@ -18,16 +18,22 @@ sensor:
       - F00000JORS  # DNB Global Indeks A
       - F00000JORR  # DNB Norge Indeks A
       - F0GBR04NGU  # DNB Teknologi A
+    lt_funds:
+      - F00000N52G  # Pensjonsprofil 100
     scan_interval: 00:10
     currency: "NOK"
 ```
 
-### funds `list, required`
+### funds `list, optional`
 List of funds you want to monitor. The values are taken from the fund's page at [morningstar.no](https://www.morningstar.no/no/).
 For example DNB Norge Indeks A has the url https://www.morningstar.no/no/funds/snapshot/snapshot.aspx?id=F00000JORR. In that url, use the `F00000JORR` part.
 
-### currency `string, optional, default=kr`
-Customize the unit of measurement, for instance "NOK" instead of the default "kr"
+### lt_funds `list, optional`
+List of funds you want to monitor. Get the link to your funds, and copy the part of the url that comes after `id=` or `SecurityToken=`, it will look something like `F00000N52F`
+For example *DNB Pensjonsprofil 100* has the url https://lt.morningstar.com/1vonrmqpe9/snapshot/snapshot.aspx?SecurityToken=F00000N52G%5d2%5d1%5dFOALL%24%24ALL_3642&ClientFund=1&LanguageId=nb-NO&CurrencyId=NOK. In that url, use the `F00000N52G` part.
+
+### currency `string, optional`
+Customize the unit of measurement, for instance "kr" instead of what is scraped from the relevant fund, typically "NOK".
 
 ### scan_interval `time, optional, default=00:30`
 Set how often you want the data to refresh. Default is 30 minutes.
