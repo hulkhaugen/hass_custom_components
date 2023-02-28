@@ -21,7 +21,7 @@ sensor:
     scan_interval: 00:10
 ```
 
-### funds `list, optional`
+### funds `list, required`
 List of funds you want to monitor. The values are taken from the fund's page at [euronext](https://live.euronext.com/nb).
 For example DNB Norge Indeks A has the url https://live.euronext.com/nb/product/funds/no0010582976.dknorix-womf/dnb-norge-indeks-a/dk-norix. In that url, use the `no0010582976.dknorix-womf` part.
 
