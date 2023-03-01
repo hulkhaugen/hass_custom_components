@@ -1,6 +1,9 @@
 # Morningstar fund sensor
 
-The `morningstar` sensor platform uses the [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.
+<img src="https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/morningstar/logo.png" width="660" height="128">
+
+The `morningstar` sensor platform uses the [morningstar.no](https://www.morningstar.no/no/) website to scrape fund data.   
+You can also check out the [Euronext](https://github.com/hulkhaugen/hass_custom_components/edit/main/euronext/) sensor
 
 <img src="https://github.com/hulkhaugen/hass_custom_components/raw/main/morningstar/morningstar_sensor.png" width="360" height="780">
 
