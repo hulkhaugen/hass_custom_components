@@ -1,6 +1,9 @@
 # Euronext fund sensor
 
-The `euronext` sensor uses the [euronext](https://live.euronext.com/nb) website to collect fund data.
+<img src="https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/euronext/logo.png">
+
+The `euronext` sensor uses the [Euronext](https://live.euronext.com/nb) website to collect fund data.
+You can also check out the [Morningstar](https://github.com/hulkhaugen/hass_custom_components/edit/main/morningstar/) sensor
 
 ## Installation
 In your config folder, there should be a subfolder named `custom_components`. If not, you need to create it. Make a new subfolder named `euronext` and copy the files from this repository to that folder: `config/custom_components/euronext`.
