@@ -52,9 +52,7 @@ async def async_get_process_data(session: object, fund: str) -> dict:
         name = html.strong.text
         state = html.find(id="header-instrument-price").text.replace(",", "")
         unit = html.find(id="header-instrument-currency").text.strip()
-        # state = "{:.2f}".format(round(float(price), 2))
-        date = html.find("div", class_="bg-brand-sky-blue").find("div").find_all("div")
-        date = date[1].get_text(strip=True).replace("/", ".")
+        date = html.find("div", class_="last-price-date-time").text.replace("/", ".")
         day = float(html.find("span", class_="text-ui-grey-1 mr-2").text[1:-2])
         unique = fund.lower()
         url = f"https://live.euronext.com/nb/product/funds/{unique}"
@@ -67,9 +65,8 @@ async def async_get_process_data(session: object, fund: str) -> dict:
         )
         attr = {
             ATTR_ATTRIBUTION: "Data provided by Euronext",
-            # "Pris": price,
             "Dato": date,
-            "Endring 1 dag": day,
+            "1 dag": str(day) + " %",
             "URL": url,
         }
         data = {
