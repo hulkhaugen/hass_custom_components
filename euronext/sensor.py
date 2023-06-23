@@ -3,7 +3,7 @@ import asyncio
 import datetime
 import logging
 
-from bs4 import BeautifulSoup
+from lxml import html
 import aiohttp
 import async_timeout
 import voluptuous as vol
@@ -31,15 +31,15 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 async def async_api_call(session: object, fund: str):
     data = "theme_name=euronext_live"
     head = {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"}
-    html_url = f"https://live.euronext.com/en/ajax/getDetailedQuote/{fund}"
+    url = f"https://live.euronext.com/en/ajax/getDetailedQuote/{fund}"
     try:
         async with async_timeout.timeout(10):
-            async with session.post(html_url, data=data, headers=head) as html:
-                html_text = await html.text()
+            async with session.post(url, data=data, headers=head) as response:
+                response_text = await response.text()
     except (asyncio.TimeoutError, aiohttp.ClientError):
         _LOGGER.warning("Unable to scrape data for %s", fund)
         return None
-    return BeautifulSoup(html_text, "html.parser")
+    return html.fromstring(response_text)
 
 
 async def async_get_process_data(session: object, fund: str) -> dict:
@@ -49,11 +49,11 @@ async def async_get_process_data(session: object, fund: str) -> dict:
         return None
     try:
         """Processing the data to be used"""
-        name = html.strong.text
-        state = html.find(id="header-instrument-price").text.replace(",", "")
-        unit = html.find(id="header-instrument-currency").text.strip()
-        date = html.find("div", class_="last-price-date-time").text.replace("/", ".")
-        day = float(html.find("span", class_="text-ui-grey-1 mr-2").text[1:-2])
+        name = html.xpath("//strong/text()")[0]
+        state = html.xpath("//span[@id='header-instrument-price']/text()")[0].replace(",", "")
+        unit = html.xpath("//span[@id='header-instrument-currency']/text()")[0].strip()
+        date = html.xpath("//div[contains(@class, 'last-price-date-time')]/text()")[1].replace("/", ".").strip()
+        day = float(html.xpath("//span[@class='text-ui-grey-1 mr-2']/text()")[0][1:-2])
         unique = fund.lower()
         url = f"https://live.euronext.com/nb/product/funds/{unique}"
         icon = (
@@ -82,7 +82,6 @@ async def async_get_process_data(session: object, fund: str) -> dict:
     except (IndexError, AttributeError):
         _LOGGER.warning("Unable to process data for %s", fund)
         return None
-
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     _LOGGER.debug("Setting up sensors")
