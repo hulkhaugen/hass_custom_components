@@ -44,7 +44,7 @@ async def async_api_call(session: object, fund: str):
 
 async def async_get_process_data(session: object, fund: str) -> dict:
     html = await async_api_call(session, fund.upper())
-    if not html:
+    if html is None:
         _LOGGER.info("Failed to retreive data for %s", fund)
         return None
     try:
