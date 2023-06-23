@@ -4,7 +4,7 @@
     "documentation": "https://github.com/hulkhaugen/hass_custom_components/tree/main/euronext",
     "issue_tracker": "https://github.com/hulkhaugen/hass_custom_components/issues",
     "codeowners": ["@hulkhaugen"],
-    "requirements": ["beautifulsoup4==4.11.2"],
+    "requirements": [],
 	"iot_class": "cloud_push",
-    "version": "1.0.0"
+    "version": "1.1.1"
 }
